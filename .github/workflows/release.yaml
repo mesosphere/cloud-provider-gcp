@@ -5,7 +5,7 @@ on:
       - 'faiq/add-build'
 permissions:
   packages: write
-
+  #${{ github.event.inputs.tag }}
 name: Release Cloud Provider GCP
 jobs:
   build:
@@ -15,6 +15,9 @@ jobs:
 
       - uses: bazelbuild/setup-bazelisk@v2
 
-      - name: publish container images
+      - name: build container images
         run: |
-          IMAGE_REGISTRY=ghcr.io IMAGE_REPO=mesosphere/cloud-controller-manager-gcp IMAGE_TAG=${{ github.event.inputs.tag }} bazel run //cmd/cloud-controller-manager:publish
+          bazel run //cmd/cloud-controller-manager:image
+          docker tag registry.k8s.io/cmd/cloud-controller-manager:image ghcr.io/mesosphere/cloud-controller-manager-gcp:TEST
+          docker push ghcr.io/mesosphere/cloud-controller-manager-gcp:TEST
+          
