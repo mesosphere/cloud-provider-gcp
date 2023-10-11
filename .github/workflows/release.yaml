@@ -1,0 +1,30 @@
+name: Release Cloud Provider GCP
+
+on:
+  workflow_dispatch:
+  push:
+    tag:
+      - 'v*'
+
+permissions:
+  packages: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: bazelbuild/setup-bazelisk@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build container images
+        run: |
+          bazel run //cmd/cloud-controller-manager:image
+          docker tag registry.k8s.io/cmd/cloud-controller-manager:image ghcr.io/mesosphere/cloud-controller-manager-gcp:${{ github.ref_name }}
+          docker push ghcr.io/mesosphere/cloud-controller-manager-gcp:${{ github.ref_name }}
