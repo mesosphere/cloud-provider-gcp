@@ -3,6 +3,8 @@ on:
   push:
     branch:
       - 'faiq/add-build'
+permissions:
+  packages: write
 
 name: Release Cloud Provider GCP
 jobs:
