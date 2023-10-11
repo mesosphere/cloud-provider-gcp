@@ -11,10 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: setup-bazelisk
-        uses: ./
-        with:
-          bazelisk-version: 1.7.4
+      - uses: bazelbuild/setup-bazelisk@v2
 
       - name: publish container images
         run: |
